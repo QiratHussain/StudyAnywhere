@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for , redirect, flash
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
+from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, ForeignKey
@@ -52,7 +52,7 @@ def register():
         new_user = User(email=form.email.data,name=form.name.data,password=hash_and_salted_password)
         db.session.add(new_user)
         db.session.commit()
-        login_user()
+        login_user(new_user)
         return redirect(url_for("home"))
     return render_template("register.html", form=form)
 
@@ -65,14 +65,21 @@ def login():
             flash('email does not exist')
         elif check_password_hash(user.password, login_form.password.data):
             login_user(user)
-            return redirect(url_for('get_all_posts'))
+            return redirect(url_for('home'))
         else:
             flash('Incorrect Password')
             return redirect(url_for('login'))
     return render_template("login.html", form= login_form,user=current_user)
 
+@app.route("/logout")
+def logout():
+    login_user()
+    return redirect(url_for("home"))
 
-# TODO: 3. login
+@app.route("/home")
+@login_required
+def contents():
+    return render_template("contents.html")
 # TODO: 4. logout
 # TODO: 5. users database
 # TODO: 6. quiz questions data
