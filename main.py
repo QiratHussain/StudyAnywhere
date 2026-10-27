@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for , redirect
+from flask import Flask, render_template, url_for , redirect, flash
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
@@ -56,10 +56,21 @@ def register():
         return redirect(url_for("home"))
     return render_template("register.html", form=form)
 
-@app.route("/login", methods=['POST', 'GET'])
+@app.route('/login', methods=['POST','GET'])
 def login():
     login_form= LoginForm()
-    return render_template("login.html", form= login_form)
+    if login_form.validate_on_submit():
+        user= db.session.execute(db.select(User).where(User.email == login_form.email.data )).scalar()
+        if not user:
+            flash('email does not exist')
+        elif check_password_hash(user.password, login_form.password.data):
+            login_user(user)
+            return redirect(url_for('get_all_posts'))
+        else:
+            flash('Incorrect Password')
+            return redirect(url_for('login'))
+    return render_template("login.html", form= login_form,user=current_user)
+
 
 # TODO: 3. login
 # TODO: 4. logout
