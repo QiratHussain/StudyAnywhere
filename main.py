@@ -1,11 +1,17 @@
-from flask import Flask
+from flask import Flask, render_template
 import os
+from flask_bootstrap import Bootstrap5
 from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+app.config['WTF_CSRF_TIME_LIMIT'] = None  
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+Bootstrap5(app)
 
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 
 # TODO: 1. set home page
