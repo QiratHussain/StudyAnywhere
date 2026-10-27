@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 import os
 from flask_bootstrap import Bootstrap5
+from forms import RegisterForm
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -13,8 +14,11 @@ Bootstrap5(app)
 def home():
     return render_template("index.html")
 
+@app.route("/register")
+def register():
+    reg_form= RegisterForm()
+    return render_template ("register.html", form= reg_form)
 
-# TODO: 1. set home page
 # TODO: 2. set registration 
 # TODO: 3. login
 # TODO: 4. logout
