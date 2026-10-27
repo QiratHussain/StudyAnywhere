@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for , redirect
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
@@ -41,7 +42,8 @@ def home():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        new_user = User(email=form.email.data,name=form.name.data,password=form.password.data)
+        hash_and_salted_password = generate_password_hash(form.password.data,method='pbkdf2:sha256',salt_length=8)
+        new_user = User(email=form.email.data,name=form.name.data,password=hash_and_salted_password)
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for("home"))
