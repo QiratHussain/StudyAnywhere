@@ -3,8 +3,8 @@ import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text, ForeignKey
+from sqlalchemy.orm import  DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import Integer, String, Text
 from flask_bootstrap import Bootstrap5
 from forms import RegisterForm, LoginForm
 from dotenv import load_dotenv
@@ -28,6 +28,7 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
+
 # tables
 class User(UserMixin, db.Model):
     __tablename__ = "users"
@@ -35,10 +36,11 @@ class User(UserMixin, db.Model):
     name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(String(100), unique=True)
     password: Mapped[str] = mapped_column(String(100))
-    
+    english : Mapped[int] = mapped_column(Integer, nullable=True)
 
 with app.app_context():
     db.create_all()
+
 # routes
 @app.route("/")
 def home():
@@ -79,9 +81,9 @@ def logout():
 @app.route("/home")
 @login_required
 def contents():
+    logout_user()
     return render_template("contents.html")
-# TODO: 4. logout
-# TODO: 5. users database
+
 # TODO: 6. quiz questions data
 # TODO: 7. users results
 # TODO: 8. results page
