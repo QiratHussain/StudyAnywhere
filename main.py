@@ -3,8 +3,8 @@ import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import  DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text
+from sqlalchemy.orm import  DeclarativeBase, relationship,Mapped, mapped_column
+from sqlalchemy import Integer, String, Float, ForeignKey
 from flask_bootstrap import Bootstrap5
 from forms import RegisterForm, LoginForm
 from dotenv import load_dotenv
@@ -36,7 +36,14 @@ class User(UserMixin, db.Model):
     name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(String(100), unique=True)
     password: Mapped[str] = mapped_column(String(100))
-    english : Mapped[int] = mapped_column(Integer, nullable=True)
+    marks = relationship("Result", back_populates="user")
+
+class Result(db.Model):
+    __tablename__="results"
+    id: Mapped[int] = mapped_column(Integer, primary_key= True)
+    user_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
+    english: Mapped[int] = mapped_column(Integer, nullable= True)
+    user = relationship("User", back_populates="marks")
 
 with app.app_context():
     db.create_all()
