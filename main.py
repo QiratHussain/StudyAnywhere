@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for , redirect, flash
+from flask import Flask, render_template, url_for , redirect, flash, request
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import  DeclarativeBase, relationship,Mapped, mapped_column
 from sqlalchemy import Integer, String, Float, ForeignKey
 from flask_bootstrap import Bootstrap5
-from forms import RegisterForm, LoginForm
+from forms import RegisterForm, LoginForm, SubjectForm
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -36,17 +36,28 @@ class User(UserMixin, db.Model):
     name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(String(100), unique=True)
     password: Mapped[str] = mapped_column(String(100))
-    marks = relationship("Result", back_populates="user")
+    results = relationship("Result", back_populates="user", cascade="all, delete-orphan")
+
+class Subject(db.Model):
+    __tablename__ = "subjects"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), unique=True)
 
 class Result(db.Model):
-    __tablename__="results"
-    id: Mapped[int] = mapped_column(Integer, primary_key= True)
+    __tablename__ = "results"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
-    english: Mapped[int] = mapped_column(Integer, nullable= True)
-    user = relationship("User", back_populates="marks")
+    subject_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("subjects.id"))
+    marks: Mapped[int] = mapped_column(Integer, nullable=True) 
+    user = relationship("User", back_populates="results")
+    subject = relationship("Subject")
+    __table_args__ = (db.UniqueConstraint("user_id", "subject_id"),)
 
 with app.app_context():
     db.create_all()
+    if not db.session.execute(db.select(Subject)).first():
+        db.session.add_all([Subject(name=n) for n in ["English", "Math", "Physics", "Chemistry", "Biology"]])
+        db.session.commit()
 
 # routes
 @app.route("/")
@@ -82,14 +93,41 @@ def login():
 
 @app.route("/logout")
 def logout():
-    login_user()
+    logout_user()
     return redirect(url_for("home"))
 
 @app.route("/home")
 @login_required
 def contents():
-    logout_user()
     return render_template("contents.html")
+
+
+@app.route("/subjects", methods=["GET", "POST"])
+# @login_required
+def choose_subjects():
+    form = SubjectForm()
+    all_subjects = db.session.execute(db.select(Subject)).scalars().all()
+    form.subjects.choices = [(s.id, s.name) for s in all_subjects]
+    if form.validate_on_submit():
+        selected = set(form.subjects.data)
+        existing = {r.subject_id: r for r in current_user.results}
+        # add newly selected
+        for sid in selected - existing.keys():
+            db.session.add(Result(user_id=current_user.id, subject_id=sid))
+        # remove deselected
+        for sid in existing.keys() - selected:
+            db.session.delete(existing[sid])
+        db.session.commit()
+        return redirect(url_for("results"))
+    if request.method == "GET":
+        form.subjects.data = [r.subject_id for r in current_user.results]  # pre-tick current choices
+    return render_template("subjects.html", form=form)
+
+
+@app.route("/results")
+@login_required
+def results():
+    return render_template("results.html", results=current_user.results)
 
 # TODO: 6. quiz questions data
 # TODO: 7. users results

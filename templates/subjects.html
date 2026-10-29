@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Subjects{%endblock%}
+{% block content %}
+<h2 class="mb-4">Choose your subjects</h2>
+
+<form method="POST" novalidate>
+  {{ form.hidden_tag() }}
+
+  {% for subfield in form.subjects %}
+    <div class="form-check mb-2">
+      {{ subfield(class="form-check-input") }}
+      {{ subfield.label(class="form-check-label") }}
+    </div>
+  {% endfor %}
+
+  {% for error in form.subjects.errors %}
+    <div class="text-danger">{{ error }}</div>
+  {% endfor %}
+
+  <button type="submit" class="btn btn-primary mt-3">Save</button>
+</form>
+{% endblock %}

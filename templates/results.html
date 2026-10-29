@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">My Results</h2>
+
+{% if results %}
+  <table class="table table-striped">
+    <thead>
+      <tr><th>Subject</th><th>Marks</th></tr>
+    </thead>
+    <tbody>
+      {% for r in results %}
+        <tr>
+          <td>{{ r.subject.name }}</td>
+          <td>{{ r.marks if r.marks is not none else "Not entered" }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>You haven't selected any subjects yet.</p>
+{% endif %}
+
+<a href="{{ url_for('choose_subjects') }}" class="btn btn-outline-primary">Change subjects</a>
+{% endblock %}
