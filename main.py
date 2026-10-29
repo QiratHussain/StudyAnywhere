@@ -9,6 +9,7 @@ from flask_bootstrap import Bootstrap5
 from forms import RegisterForm, LoginForm, SubjectForm, QuizForm
 from dotenv import load_dotenv
 load_dotenv()
+import random
 
 
 # configure
@@ -142,28 +143,22 @@ def choose_subjects():
 def results():
     return render_template("results.html", results=current_user.results)
 
-quiz = {
-    "id": "q1",
-    "question": "Which planet in the solar system has the shortest orbit around the Sun?",
-    "choices": [
-        ("A", "Venus"),
-        ("B", "Mercury"),
-        ("C", "Mars"),
-        ("D", "Earth"),
-    ],
-    "answer": "B",
-}
-
 @app.route("/quiz", methods=["GET", "POST"])
 def quiz_page():
-    form = QuizForm()
-    form.choice.choices = quiz["choices"]
-    result = None
-    if form.validate_on_submit():
-        selected = form.choice.data
-        texts = dict(quiz["choices"])
-        result = {"selected": selected,"selected_text": texts[selected],"correct": quiz["answer"],"correct_text": texts[quiz["answer"]],"is_correct": selected == quiz["answer"],}
-    return render_template("quiz.html", form=form, quiz=quiz, result=result)
+    with app.app_context():
+        chosen_id=1
+        chosen_question = db.get_or_404(Questions,chosen_id)
+        print(type(chosen_question))
+        print(chosen_question.id)
+        question = {"id": chosen_question.id,"question": chosen_question.question_text,"choices": [("A", chosen_question.option_a),("B",chosen_question.option_b),("C", chosen_question.option_c),("D",chosen_question.option_d),],"answer": chosen_question.right_option,}
+        form = QuizForm()
+        form.choice.choices = question["choices"]
+        result = None
+        if form.validate_on_submit():
+            selected = form.choice.data
+            texts = dict(question["choices"])
+            result = {"selected": selected,"selected_text": texts[selected],"correct": question["answer"],"correct_text": texts[question["answer"]],"is_correct": selected == question["answer"],}
+        return render_template("quiz.html", form=form, quiz=question, result=result)
 
 # TODO: 10. quiz form
 # TODO: 11. quiz page
