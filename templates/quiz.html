@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-body-tertiary">
+  <main class="container py-5" style="max-width: 600px;">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <form method="post" novalidate>
+          {{ form.hidden_tag() }}
+
+          <fieldset class="mb-3">
+            <legend class="h5 mb-3">{{ quiz.question }}</legend>
+
+            {% for subfield in form.choice %}
+              {% set locked = result is not none %}
+              {% set cls = "" %}
+              {% if locked and subfield.data == result.correct %}
+                {% set cls = "list-group-item-success" %}
+              {% elif locked and subfield.data == result.selected %}
+                {% set cls = "list-group-item-danger" %}
+              {% endif %}
+              <div class="form-check border rounded p-3 ps-5 mb-2 {{ cls }}">
+                {{ subfield(class="form-check-input", disabled=locked) }}
+                {{ subfield.label(class="form-check-label w-100") }}
+              </div>
+            {% endfor %}
+
+            {% for error in form.choice.errors %}
+              <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+          </fieldset>
+
+          {% if result is none %}
+            {{ form.submit(class="btn btn-primary") }}
+          {% else %}
+            <a href="{{ url_for("home") }}" class="btn btn-outline-primary">Try again</a>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+
+    {% if result %}
+      <div class="alert {{ 'alert-success' if result.is_correct else 'alert-danger' }} mt-3" role="alert">
+        <h2 class="h5 alert-heading">{{ 'Correct' if result.is_correct else 'Not quite' }}</h2>
+        <p class="mb-1"><strong>You selected:</strong> {{ result.selected }}. {{ result.selected_text }}</p>
+        <p class="mb-0"><strong>Correct answer:</strong> {{ result.correct }}. {{ result.correct_text }}</p>
+      </div>
+    {% endif %}
+  </main>
+</body>
+</html>

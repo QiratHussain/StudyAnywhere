@@ -142,7 +142,29 @@ def choose_subjects():
 def results():
     return render_template("results.html", results=current_user.results)
 
-# TODO: 6. quiz questions data
+quiz = {
+    "id": "q1",
+    "question": "Which planet in the solar system has the shortest orbit around the Sun?",
+    "choices": [
+        ("A", "Venus"),
+        ("B", "Mercury"),
+        ("C", "Mars"),
+        ("D", "Earth"),
+    ],
+    "answer": "B",
+}
+
+@app.route("/quiz", methods=["GET", "POST"])
+def quiz_page():
+    form = QuizForm()
+    form.choice.choices = quiz["choices"]
+    result = None
+    if form.validate_on_submit():
+        selected = form.choice.data
+        texts = dict(quiz["choices"])
+        result = {"selected": selected,"selected_text": texts[selected],"correct": quiz["answer"],"correct_text": texts[quiz["answer"]],"is_correct": selected == quiz["answer"],}
+    return render_template("quiz.html", form=form, quiz=quiz, result=result)
+
 # TODO: 10. quiz form
 # TODO: 11. quiz page
 # TODO: 12. users profiles
