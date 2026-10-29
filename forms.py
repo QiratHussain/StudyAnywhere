@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
-from wtforms.validators import DataRequired, URL
+from wtforms import StringField, SelectMultipleField,SubmitField, PasswordField
+from wtforms.validators import DataRequired
+from wtforms.widgets import ListWidget, CheckboxInput
 from flask_ckeditor import CKEditorField
 
 class RegisterForm(FlaskForm):
@@ -14,10 +15,11 @@ class LoginForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Login!")
 
-    from flask_wtf import FlaskForm
-from wtforms import SelectMultipleField, SubmitField
-from wtforms.widgets import ListWidget, CheckboxInput
-
 class SubjectForm(FlaskForm):
     subjects = SelectMultipleField("Choose your subjects", coerce=int,widget=ListWidget(prefix_label=False),option_widget=CheckboxInput(),)
     submit = SubmitField("Save")
+
+class QuizForm(FlaskForm):
+    subjects = SelectMultipleField("Who is the main lead of this drame", coerce=int,widget=ListWidget(prefix_label=False),option_widget=CheckboxInput(),)
+    submit = SubmitField("Save")
+

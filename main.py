@@ -1,12 +1,12 @@
-from flask import Flask, render_template, url_for , redirect, flash, request
+from flask import Flask, render_template, url_for , redirect, flash, request, abort
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import  DeclarativeBase, relationship,Mapped, mapped_column
-from sqlalchemy import Integer, String, Float, ForeignKey
+from sqlalchemy import Integer, String, Float, ForeignKey, func, select
 from flask_bootstrap import Bootstrap5
-from forms import RegisterForm, LoginForm, SubjectForm
+from forms import RegisterForm, LoginForm, SubjectForm, QuizForm
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -42,6 +42,19 @@ class Subject(db.Model):
     __tablename__ = "subjects"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100), unique=True)
+    questions = relationship("Questions", back_populates="subject", cascade="all, delete-orphan")
+
+class Questions(db.Model):
+    __tablename__ = "questions"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    subject_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("subjects.id"))
+    subject = relationship("Subject", back_populates="questions")
+    question_text: Mapped[str] = mapped_column(String(100))
+    option_a: Mapped[str] = mapped_column(String(1000))
+    option_b: Mapped[str] = mapped_column(String(100))
+    option_c: Mapped[str] = mapped_column(String(100))
+    option_d: Mapped[str] = mapped_column(String(100))
+    right_option: Mapped[str] = mapped_column(String(100))
 
 class Result(db.Model):
     __tablename__ = "results"
@@ -130,9 +143,6 @@ def results():
     return render_template("results.html", results=current_user.results)
 
 # TODO: 6. quiz questions data
-# TODO: 7. users results
-# TODO: 8. results page
-# TODO: 9. subjects page
 # TODO: 10. quiz form
 # TODO: 11. quiz page
 # TODO: 12. users profiles
