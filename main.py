@@ -87,7 +87,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
-        return redirect(url_for("home"))
+        return redirect(url_for(url_for('contents')))
     return render_template("register.html", form=form)
 
 @app.route('/login', methods=['POST','GET'])
@@ -99,7 +99,7 @@ def login():
             flash('email does not exist')
         elif check_password_hash(user.password, login_form.password.data):
             login_user(user)
-            return redirect(url_for('home'))
+            return redirect((url_for('contents')))
         else:
             flash('Incorrect Password')
             return redirect(url_for('login'))
@@ -110,7 +110,7 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
-@app.route("/home")
+@app.route("/contents")
 @login_required
 def contents():
     return render_template("contents.html")
@@ -160,9 +160,11 @@ def quiz_page():
             result = {"selected": selected,"selected_text": texts[selected],"correct": question["answer"],"correct_text": texts[question["answer"]],"is_correct": selected == question["answer"],}
         return render_template("quiz.html", form=form, quiz=question, result=result)
 
-# TODO: 10. quiz form
-# TODO: 11. quiz page
-# TODO: 12. users profiles
+
+# TODO: 13. match subject id with subject chosen
+# TODO: 14. overall styling
+# TODO: 15. next quiz button and route
+# TODO: 16. setup and buttons and links
 
 if __name__ == "__main__":
     app.run(debug=True, port=5003)

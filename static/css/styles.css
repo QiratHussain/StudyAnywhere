@@ -1,0 +1,343 @@
+/* ==========================================================================
+   Common stylesheet — link in every page with:
+   <link rel="stylesheet" href="style.css">
+   ========================================================================== */
+
+/* ---------- Color tokens ---------- */
+:root {
+    --bg: #FFF6DE;          /* background */
+    --highlight: #FFE394;   /* highlight */
+    --button: #8BDFDD;      /* buttons */
+    --sharp: #F48F68;       /* sharpest accent */
+  
+    --text: #2B2622;
+    --text-muted: #6B6159;
+    --border: rgba(43, 38, 34, 0.15);
+  
+    --button-hover: #74CFCD;
+    --sharp-hover: #E87A50;
+  
+    --radius: 10px;
+    --shadow: 0 2px 8px rgba(43, 38, 34, 0.08);
+    --max-width: 1100px;
+  }
+  
+  /* ---------- Reset ---------- */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  img,
+  video,
+  svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  /* ---------- Typography ---------- */
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 0.5em;
+    line-height: 1.25;
+    color: var(--text);
+  }
+  
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.4rem; }
+  h4 { font-size: 1.15rem; }
+  
+  p { margin: 0 0 1em; }
+  
+  a {
+    color: var(--sharp);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  a:hover { color: var(--sharp-hover); }
+  
+  small, .muted { color: var(--text-muted); }
+  
+  mark,
+  .highlight {
+    background: var(--highlight);
+    color: var(--text);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+  }
+  
+  hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+  
+  code {
+    background: var(--highlight);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+  
+  pre {
+    background: var(--highlight);
+    padding: 1rem;
+    border-radius: var(--radius);
+    overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; }
+  
+  blockquote {
+    margin: 1.5rem 0;
+    padding: 0.75rem 1.25rem;
+    background: var(--highlight);
+    border-left: 5px solid var(--sharp);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  
+  /* ---------- Layout ---------- */
+  .container {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  header,
+  .site-header {
+    background: var(--highlight);
+    border-bottom: 3px solid var(--sharp);
+    padding: 1rem 0;
+  }
+  
+  nav a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+  }
+  nav a:hover,
+  nav a.active {
+    background: var(--sharp);
+    color: #fff;
+  }
+  
+  main { padding: 2rem 0; }
+  
+  footer,
+  .site-footer {
+    background: var(--highlight);
+    border-top: 3px solid var(--sharp);
+    padding: 1.5rem 0;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  
+  section { margin-bottom: 2.5rem; }
+  
+  /* ---------- Buttons ---------- */
+  button,
+  .btn,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    display: inline-block;
+    background: var(--button);
+    color: var(--text);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    padding: 0.6rem 1.2rem;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease, border-color 0.15s ease;
+  }
+  
+  button:hover,
+  .btn:hover,
+  input[type="button"]:hover,
+  input[type="submit"]:hover,
+  input[type="reset"]:hover {
+    background: var(--button-hover);
+    color: var(--text);
+  }
+  
+  button:active,
+  .btn:active { transform: translateY(1px); }
+  
+  button:focus-visible,
+  .btn:focus-visible {
+    outline: 3px solid var(--sharp);
+    outline-offset: 2px;
+  }
+  
+  button:disabled,
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Sharp (call-to-action) button */
+  .btn-sharp {
+    background: var(--sharp);
+    color: #fff;
+  }
+  .btn-sharp:hover {
+    background: var(--sharp-hover);
+    color: #fff;
+  }
+  
+  /* Outline button */
+  .btn-outline {
+    background: transparent;
+    border-color: var(--button);
+  }
+  .btn-outline:hover { background: var(--button); }
+  
+  /* ---------- Forms ---------- */
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="date"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    background: #fff;
+    color: var(--text);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    font: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--sharp);
+    box-shadow: 0 0 0 3px var(--highlight);
+  }
+  
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--sharp);
+  }
+  
+  .form-group { margin-bottom: 1.2rem; }
+  
+  /* ---------- Cards ---------- */
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+  }
+  
+  .card-highlight {
+    background: var(--highlight);
+    border-color: transparent;
+  }
+  
+  .grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+  
+  /* ---------- Tables ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  
+  th {
+    background: var(--sharp);
+    color: #fff;
+    text-align: left;
+  }
+  
+  th, td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  tbody tr:nth-child(even) { background: var(--bg); }
+  tbody tr:hover { background: var(--highlight); }
+  
+  /* ---------- Badges & alerts ---------- */
+  .badge {
+    display: inline-block;
+    background: var(--button);
+    padding: 0.15em 0.6em;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .badge-sharp { background: var(--sharp); color: #fff; }
+  .badge-highlight { background: var(--highlight); }
+  
+  .alert {
+    padding: 0.9rem 1.2rem;
+    border-radius: var(--radius);
+    background: var(--highlight);
+    border-left: 5px solid var(--sharp);
+    margin-bottom: 1rem;
+  }
+  
+  /* ---------- Utilities ---------- */
+  .text-center { text-align: center; }
+  .text-sharp { color: var(--sharp); }
+  .bg-highlight { background: var(--highlight); }
+  .bg-button { background: var(--button); }
+  .bg-sharp { background: var(--sharp); color: #fff; }
+  
+  .mt-1 { margin-top: 0.5rem; }
+  .mt-2 { margin-top: 1rem; }
+  .mt-3 { margin-top: 2rem; }
+  .mb-1 { margin-bottom: 0.5rem; }
+  .mb-2 { margin-bottom: 1rem; }
+  .mb-3 { margin-bottom: 2rem; }
+  
+  .flex { display: flex; gap: 1rem; align-items: center; }
+  .flex-between { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .hidden { display: none !important; }
+  
+  /* ---------- Responsive ---------- */
+  @media (max-width: 600px) {
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.4rem; }
+    .flex-between { flex-direction: column; align-items: stretch; }
+  }
