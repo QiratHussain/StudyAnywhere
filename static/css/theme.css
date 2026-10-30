@@ -1,0 +1,133 @@
+/* ==========================================================
+   StudyAnywhere theme
+   ========================================================== */
+   :root {
+    --color-bg: #FFF6DE;         /* page background */
+    --color-highlight: #FFE394;  /* header, footer, hover states */
+    --color-button: #8BDFDD;     /* buttons */
+    --color-sharp: #F48F68;      /* accents */
+    --color-sharp-dark: #d9743f;
+    --color-text: #2b2b2b;
+  
+    /* Re-point Bootstrap variables to the palette */
+    --bs-body-bg: var(--color-bg);
+    --bs-body-color: var(--color-text);
+    --bs-link-color: var(--color-sharp);
+    --bs-link-hover-color: var(--color-sharp-dark);
+    --bs-primary: var(--color-button);
+    --bs-primary-rgb: 139, 223, 221;
+  }
+  
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+  
+  /* ---------- Header / nav ---------- */
+  .site-header {
+    background-color: var(--color-highlight);
+    border-bottom: 3px solid var(--color-sharp);
+  }
+  .site-header .brand {
+    color: var(--color-text);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .site-header .nav-link {
+    color: var(--color-text);
+    border-radius: 999px;
+  }
+  .site-header .nav-link:hover {
+    background-color: var(--color-bg);
+  }
+  .site-header .nav-link.active {
+    background-color: var(--color-sharp);
+    color: #fff;
+  }
+  
+  /* ---------- Buttons ---------- */
+  .btn-primary {
+    --bs-btn-color: var(--color-text);
+    --bs-btn-bg: var(--color-button);
+    --bs-btn-border-color: var(--color-button);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--color-sharp);
+    --bs-btn-hover-border-color: var(--color-sharp);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--color-sharp);
+    --bs-btn-active-border-color: var(--color-sharp);
+    --bs-btn-focus-shadow-rgb: 139, 223, 221;
+    --bs-btn-disabled-bg: var(--color-button);
+    --bs-btn-disabled-border-color: var(--color-button);
+    font-weight: 600;
+  }
+  
+  .btn-accent {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--color-sharp);
+    --bs-btn-border-color: var(--color-sharp);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--color-sharp-dark);
+    --bs-btn-hover-border-color: var(--color-sharp-dark);
+  }
+  
+  /* ---------- Forms ---------- */
+  .form-control:focus {
+    border-color: var(--color-sharp);
+    box-shadow: 0 0 0 0.25rem rgba(244, 143, 104, 0.25);
+  }
+  
+  /* ---------- Footer ---------- */
+  .site-footer {
+    background-color: var(--color-highlight);
+    border-top: 3px solid var(--color-sharp);
+  }
+  .social-link {
+    color: var(--color-text);
+    font-size: 1.4rem;
+    padding: 0 0.4rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .social-link:hover {
+    color: var(--color-sharp);
+    transform: translateY(-2px);
+  }
+  
+  /* ==========================================================
+     Home page (index.html)
+     ========================================================== */
+  .home-hero {
+    min-height: 70vh;
+  }
+  
+  /* Right-half image column: fills the full height of the row */
+  .hero-col {
+    display: flex;
+  }
+  .hero-img {
+    flex: 1;
+    width: 100%;
+    min-height: 420px;
+    object-fit: cover;
+    border-radius: 1rem;
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+  }
+  
+  /* Clickable cards */
+  .action-card {
+    background-color: var(--color-highlight);
+    border: 2px solid transparent;
+    border-radius: 1rem;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+    border-color: var(--color-sharp);
+  }
+  .action-card .card-title {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+  .action-card.card-signup { background-color: var(--color-button); }
+  .action-card.card-login  { background-color: var(--color-highlight); }

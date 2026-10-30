@@ -1,70 +1,47 @@
 {% extends "base.html" %}
-  <title>Home</title>
 
-  <style>
-    .hero-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .action-card {
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-    .action-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
-    }
-  </style>
+{% block title %}Home | StudyAnywhere{% endblock %}
 
-<body>
 {% block content %}
-  <div class="container-fluid vh-100">
-    <div class="row h-100">
+<div class="row home-hero align-items-stretch g-4">
 
-      <!-- LEFT HALF: heading, subheading, cards -->
-      <div class="col-md-6 d-flex flex-column p-5">
+  <!-- LEFT HALF: heading, subheading, cards -->
+  <div class="col-md-6 d-flex flex-column justify-content-center">
+    <div class="mb-5">
+      <h1 class="display-5 fw-bold">Your Heading Here</h1>
+      <p class="lead text-muted">Your subheading goes here, a short line describing what this is about.</p>
+    </div>
 
-        <!-- Heading + subheading at top left -->
-        <div class="mb-5">
-          <h1 class="display-5 fw-bold">Your Heading Here</h1>
-          <p class="lead text-muted">Your subheading goes here, a short line describing what this is about.</p>
-        </div>
-
-        <!-- Two clickable cards -->
-        <div class="row g-4">
-          <div class="col-sm-6">
-            <a href="{{ url_for('register') }}" class="text-decoration-none">
-              <div class="card action-card h-100 text-center border-primary">
-                <div class="card-body py-5">
-                  <h4 class="card-title text-primary">Sign Up</h4>
-                  <p class="card-text text-muted mb-0">Create a new account</p>
-                </div>
-              </div>
-            </a>
+    <div class="row g-4">
+      <div class="col-sm-6">
+        <a href="{{ url_for('register') }}" class="text-decoration-none">
+          <div class="card action-card card-signup h-100 text-center">
+            <div class="card-body py-5">
+              <h4 class="card-title">Sign Up</h4>
+              <p class="card-text mb-0">Create a new account</p>
+            </div>
           </div>
-
-          <div class="col-sm-6">
-            <a href="{{ url_for('login') }}" class="text-decoration-none">
-              <div class="card action-card h-100 text-center border-success">
-                <div class="card-body py-5">
-                  <h4 class="card-title text-success">Login</h4>
-                  <p class="card-text text-muted mb-0">Access your account</p>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-
+        </a>
       </div>
 
-      <!-- RIGHT HALF: image (put your link in src) -->
-      <div class="col-md-6 p-0 d-none d-md-block">
-        <img src="../static/assets/images/study.jpg" alt="Hero image" class="hero-img">
+      <div class="col-sm-6">
+        <a href="{{ url_for('login') }}" class="text-decoration-none">
+          <div class="card action-card card-login h-100 text-center">
+            <div class="card-body py-5">
+              <h4 class="card-title">Login</h4>
+              <p class="card-text mb-0">Access your account</p>
+            </div>
+          </div>
+        </a>
       </div>
-
     </div>
   </div>
 
-{% endblock %}
-</body>
+  <!-- RIGHT HALF: image -->
+  <div class="col-md-6 hero-col d-none d-md-flex">
+    <img src="{{ url_for('static', filename='assets/images/study.jpg') }}"
+         alt="Student studying" class="hero-img">
+  </div>
 
+</div>
+{% endblock %}
