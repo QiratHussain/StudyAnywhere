@@ -146,3 +146,19 @@
   .action-card.card-quiz .card-title,
   .action-card.card-quiz .card-text,
   .action-card.card-quiz .card-icon  { color: #fff; }
+
+  /* ==========================================================
+   Quiz page: subject cards
+   ========================================================== */
+.subject-card .card-icon {
+    font-size: 2.5rem;
+    color: var(--color-text);
+  }
+  
+  /* Cycle through the palette so each subject looks different */
+  .col-sm-6:nth-child(3n+1) .subject-card { background-color: var(--color-highlight); }
+  .col-sm-6:nth-child(3n+2) .subject-card { background-color: var(--color-button); }
+  .col-sm-6:nth-child(3n+3) .subject-card { background-color: var(--color-sharp); }
+  .col-sm-6:nth-child(3n+3) .subject-card .card-title,
+  .col-sm-6:nth-child(3n+3) .subject-card .card-text,
+  .col-sm-6:nth-child(3n+3) .subject-card .card-icon { color: #fff; }

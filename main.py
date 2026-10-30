@@ -148,13 +148,11 @@ def subjects():
 def results():
     return render_template("results.html", results=current_user.results)
 
-@app.route("/quiz", methods=["GET", "POST"])
-def start_quiz():
+@app.route("/quiz/<int:subject_id>", methods=["GET", "POST"])
+def quiz():
     with app.app_context():
         chosen_id=1
         chosen_question = db.get_or_404(Questions,chosen_id)
-        print(type(chosen_question))
-        print(chosen_question.id)
         question = {"id": chosen_question.id,"question": chosen_question.question_text,"choices": [("A", chosen_question.option_a),("B",chosen_question.option_b),("C", chosen_question.option_c),("D",chosen_question.option_d),],"answer": chosen_question.right_option,}
         form = QuizForm()
         form.choice.choices = question["choices"]
@@ -164,6 +162,11 @@ def start_quiz():
             texts = dict(question["choices"])
             result = {"selected": selected,"selected_text": texts[selected],"correct": question["answer"],"correct_text": texts[question["answer"]],"is_correct": selected == question["answer"],}
         return render_template("quiz.html", form=form, quiz=question, result=result)
+
+@app.route("/start_quiz")
+def start_quiz():
+    subjects = [{"id": 1, "name": "Mathematics", "description": "Algebra, geometry and more"},{"id": 2, "name": "Physics", "description": "Forces, energy and motion"},{"id": 3, "name": "Chemistry",   "description": "Elements and reactions"},{"id": 4, "name": "Biology",     "description": "Life and living systems"},]
+    return render_template("quiz.html", subjects=subjects)
 
 
 # TODO: 13. match subject id with subject chosen
