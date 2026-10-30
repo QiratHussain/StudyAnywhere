@@ -118,7 +118,7 @@ def contents():
 
 @app.route("/subjects", methods=["GET", "POST"])
 # @login_required
-def choose_subjects():
+def subjects():
     form = SubjectForm()
     all_subjects = db.session.execute(db.select(Subject)).scalars().all()
     form.subjects.choices = [(s.id, s.name) for s in all_subjects]
@@ -144,7 +144,7 @@ def results():
     return render_template("results.html", results=current_user.results)
 
 @app.route("/quiz", methods=["GET", "POST"])
-def quiz_page():
+def start_quiz():
     with app.app_context():
         chosen_id=1
         chosen_question = db.get_or_404(Questions,chosen_id)

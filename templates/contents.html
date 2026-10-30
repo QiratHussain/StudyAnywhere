@@ -1,1 +1,55 @@
 {% extends "base.html" %}
+
+{% block title %}Contents | StudyAnywhere{% endblock %}
+
+{% block content %}
+<section class="contents-page py-4">
+
+  <!-- Heading + subheading -->
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Your Study Space</h1>
+    <p class="lead text-muted mb-0">Pick up where you left off, review your progress, or test yourself with a quiz.</p>
+  </div>
+
+  <!-- Clickable cards -->
+  <div class="row g-4 justify-content-center">
+
+    <div class="col-sm-6 col-lg-4">
+      <a href="{{ url_for('subjects') }}" class="text-decoration-none">
+        <div class="card action-card card-subjects h-100 text-center">
+          <div class="card-body py-5">
+            <i class="bi bi-journal-bookmark card-icon"></i>
+            <h4 class="card-title mt-3">My Subjects</h4>
+            <p class="card-text mb-0">Browse and manage what you're studying</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-4">
+      <a href="{{ url_for('results') }}" class="text-decoration-none">
+        <div class="card action-card card-results h-100 text-center">
+          <div class="card-body py-5">
+            <i class="bi bi-bar-chart-line card-icon"></i>
+            <h4 class="card-title mt-3">My Results</h4>
+            <p class="card-text mb-0">See your scores and track your progress</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-4">
+      <a href="{{ url_for('start_quiz') }}" class="text-decoration-none">
+        <div class="card action-card card-quiz h-100 text-center">
+          <div class="card-body py-5">
+            <i class="bi bi-lightning-charge card-icon"></i>
+            <h4 class="card-title mt-3">Start a Quiz</h4>
+            <p class="card-text mb-0">Test your knowledge right now</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

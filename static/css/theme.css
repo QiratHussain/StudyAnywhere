@@ -131,3 +131,18 @@
   }
   .action-card.card-signup { background-color: var(--color-button); }
   .action-card.card-login  { background-color: var(--color-highlight); }
+
+  /* ==========================================================
+   Contents page
+   ========================================================== */
+.card-icon {
+    font-size: 2.5rem;
+    color: var(--color-text);
+  }
+  
+  .action-card.card-subjects { background-color: var(--color-highlight); }
+  .action-card.card-results  { background-color: var(--color-button); }
+  .action-card.card-quiz     { background-color: var(--color-sharp); }
+  .action-card.card-quiz .card-title,
+  .action-card.card-quiz .card-text,
+  .action-card.card-quiz .card-icon  { color: #fff; }
