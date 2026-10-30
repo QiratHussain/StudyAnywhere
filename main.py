@@ -82,12 +82,17 @@ def home():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        hash_and_salted_password = generate_password_hash(form.password.data,method='pbkdf2:sha256',salt_length=8)
-        new_user = User(email=form.email.data,name=form.name.data,password=hash_and_salted_password)
-        db.session.add(new_user)
-        db.session.commit()
-        login_user(new_user)
-        return redirect(url_for('contents'))
+        user= db.session.execute(db.select(User).where(User.email == form.email.data )).scalar()
+        if not user:
+            hash_and_salted_password = generate_password_hash(form.password.data,method='pbkdf2:sha256',salt_length=8)
+            new_user = User(email=form.email.data,name=form.name.data,password=hash_and_salted_password)
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(new_user)
+            return redirect(url_for('contents'))
+        else:
+            flash("email already exists, log in instead")
+            return redirect(url_for("login"))
     return render_template("register.html", form=form)
 
 @app.route('/login', methods=['POST','GET'])
@@ -162,9 +167,7 @@ def start_quiz():
 
 
 # TODO: 13. match subject id with subject chosen
-# TODO: 14. overall styling
 # TODO: 15. next quiz button and route
-# TODO: 16. setup and buttons and links
 
 if __name__ == "__main__":
     app.run(debug=True, port=5003)
