@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for , redirect, flash, request, abort
+from flask import Flask, render_template, url_for , redirect, flash, request, abort, session
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
@@ -62,7 +62,8 @@ class Result(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
     subject_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("subjects.id"))
-    marks: Mapped[int] = mapped_column(Integer, nullable=True) 
+    marks: Mapped[int] = mapped_column(Integer, default=0)
+    attempted_qs: Mapped[int] = mapped_column(Integer, default=0)
     user = relationship("User", back_populates="results")
     subject = relationship("Subject")
     __table_args__ = (db.UniqueConstraint("user_id", "subject_id"),)
@@ -148,21 +149,69 @@ def subjects():
 def results():
     return render_template("results.html", results=current_user.results)
 
-@app.route("/quiz/<int:subject_id>", methods=["GET", "POST"])
-def quiz():
-    with app.app_context():
-        chosen_id=1
-        chosen_question = db.get_or_404(Questions,chosen_id)
-        question = {"id": chosen_question.id,"question": chosen_question.question_text,"choices": [("A", chosen_question.option_a),("B",chosen_question.option_b),("C", chosen_question.option_c),("D",chosen_question.option_d),],"answer": chosen_question.right_option,}
-        form = QuizForm()
-        form.choice.choices = question["choices"]
-        result = None
-        if form.validate_on_submit():
-            selected = form.choice.data
-            texts = dict(question["choices"])
-            result = {"selected": selected,"selected_text": texts[selected],"correct": question["answer"],"correct_text": texts[question["answer"]],"is_correct": selected == question["answer"],}
-        return render_template("quiz.html", form=form, quiz=question, result=result)
+@app.route("/quiz/<int:subject_id>", defaults={"index": 0}, methods=["GET", "POST"])
+@app.route("/quiz/<int:subject_id>/<int:index>", methods=["GET", "POST"])
+@login_required
+def quiz(subject_id, index):
+    questions = db.session.execute(
+        db.select(Questions).where(Questions.subject_id == subject_id).order_by(Questions.id)
+    ).scalars().all()
+    if not questions:
+        abort(404)
+    if index >= len(questions):
+        return redirect(url_for("results"))
 
+    # get (or create) this user's result row for the subject
+    res = db.session.execute(
+        db.select(Result).where(Result.user_id == current_user.id, Result.subject_id == subject_id)
+    ).scalar()
+    if not res:
+        res = Result(user_id=current_user.id, subject_id=subject_id, marks=0, attempted_qs=0)
+        db.session.add(res)
+        db.session.commit()
+
+    # new run through the quiz: forget which questions were already counted
+    # (the saved totals in the database are NOT touched)
+    key = f"answered_{subject_id}"
+    if index == 0 and request.method == "GET":
+        session.pop(key, None)
+
+    q = questions[index]
+    question = {
+        "id": q.id,
+        "question": q.question_text,
+        "choices": [("A", q.option_a), ("B", q.option_b), ("C", q.option_c), ("D", q.option_d)],
+        "answer": q.right_option,
+    }
+    form = QuizForm()
+    form.choice.choices = question["choices"]
+    result = None
+
+    if form.validate_on_submit():
+        selected = form.choice.data
+        texts = dict(question["choices"])
+        is_correct = selected == question["answer"]
+        result = {
+            "selected": selected,
+            "selected_text": texts[selected],
+            "correct": question["answer"],
+            "correct_text": texts[question["answer"]],
+            "is_correct": is_correct,
+        }
+        # count each question once per run (guards against refresh/resubmit)
+        answered = session.get(key, [])
+        if q.id not in answered:
+            res.attempted_qs = (res.attempted_qs or 0) + 1
+            if is_correct:
+                res.marks = (res.marks or 0) + 1
+            session[key] = answered + [q.id]
+            db.session.commit()
+
+    return render_template(
+        "question.html", form=form, quiz=question, result=result,
+        subject_id=subject_id, index=index, is_last=(index == len(questions) - 1),
+    )
+    
 @app.route("/start_quiz")
 def start_quiz():
     subjects = [{"id": 1, "name": "Mathematics", "description": "Algebra, geometry and more"},{"id": 2, "name": "Physics", "description": "Forces, energy and motion"},{"id": 3, "name": "Chemistry",   "description": "Elements and reactions"},{"id": 4, "name": "Biology",     "description": "Life and living systems"},]
