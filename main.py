@@ -1,4 +1,3 @@
-# new
 from flask import Flask, render_template, url_for , redirect, flash, request, abort, session
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -167,15 +166,7 @@ def quiz(subject_id, index):
     order_key = f"order_{subject_id}"
     key = f"answered_{subject_id}"
 
-    # get (or create) this user's result row for the subject
-    res = db.session.execute(
-        db.select(Result).where(Result.user_id == current_user.id, Result.subject_id == subject_id)
-    ).scalar()
-    if not res:
-        res = Result(user_id=current_user.id, subject_id=subject_id, marks=0, attempted_qs=0)
-        db.session.add(res)
-
-    # new run: build a fresh random order and reset the score
+    # new run: build a fresh random order of this subject's question ids
     if index == 0 and request.method == "GET":
         ids = db.session.execute(
             db.select(Questions.id).where(Questions.subject_id == subject_id)
@@ -185,10 +176,6 @@ def quiz(subject_id, index):
         random.shuffle(ids)
         session[order_key] = ids
         session.pop(key, None)
-        res.marks = 0
-        res.attempted_qs = 0
-
-    db.session.commit()
 
     order = session.get(order_key)
     if not order:
@@ -197,6 +184,15 @@ def quiz(subject_id, index):
 
     if index >= len(order):
         return redirect(url_for("results"))
+
+    # get (or create) this user's result row for the subject
+    res = db.session.execute(
+        db.select(Result).where(Result.user_id == current_user.id, Result.subject_id == subject_id)
+    ).scalar()
+    if not res:
+        res = Result(user_id=current_user.id, subject_id=subject_id, marks=0, attempted_qs=0)
+        db.session.add(res)
+        db.session.commit()
 
     q = db.session.get(Questions, order[index])
     if q is None or q.subject_id != subject_id:
@@ -234,7 +230,7 @@ def quiz(subject_id, index):
     return render_template(
         "question.html", form=form, quiz=question, result=result,
         subject_id=subject_id, index=index, is_last=(index == len(order) - 1),
-    )   
+    )    
 
 @app.route("/start-quiz")
 @login_required
@@ -243,6 +239,8 @@ def start_quiz():
     return render_template("quiz.html", subjects=my_subjects)
 
 
+# TODO: 13. match subject id with subject chosen
+# TODO: 15. next quiz button and route
 
 if __name__ == "__main__":
     app.run(debug=True, port=5003)

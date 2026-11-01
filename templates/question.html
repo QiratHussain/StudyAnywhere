@@ -30,7 +30,6 @@
             <div class="text-danger small">{{ error }}</div>
           {% endfor %}
         </fieldset>
-
         <div class="d-flex justify-content-between">
           <a href="{{ url_for('results') }}" class="btn btn-outline-danger">End quiz</a>
 
@@ -42,6 +41,8 @@
             <a href="{{ url_for('quiz', subject_id=subject_id, index=index + 1) }}" class="btn btn-primary">Next question</a>
           {% endif %}
         </div>
+        
+        
       </form>
     </div>
   </div>
