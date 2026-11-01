@@ -85,7 +85,7 @@ Never commit your `.env` file or expose credentials in your repository.
 ### 5. Run the application
 
 ```bash
-python app.py
+python main.py
 ```
 
 Open:
