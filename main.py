@@ -31,12 +31,6 @@ def load_user(user_id):
     return db.session.get(User, int(user_id))
 
 # tables
-
-user_subjects = db.Table(
-    "user_subjects",
-    db.Column("user_id", db.Integer, db.ForeignKey("users.id"), primary_key=True),
-    db.Column("subject_id", db.Integer, db.ForeignKey("subjects.id"), primary_key=True),)
-
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -44,15 +38,12 @@ class User(UserMixin, db.Model):
     email: Mapped[str] = mapped_column(String(100), unique=True)
     password: Mapped[str] = mapped_column(String(100))
     results = relationship("Result", back_populates="user", cascade="all, delete-orphan")
-    subjects = relationship("Subject", secondary=user_subjects, back_populates="students")
-
 
 class Subject(db.Model):
     __tablename__ = "subjects"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100), unique=True)
     questions = relationship("Questions", back_populates="subject", cascade="all, delete-orphan")
-    students = relationship("User", secondary=user_subjects, back_populates="subjects")
 
 class Questions(db.Model):
     __tablename__ = "questions"
@@ -80,7 +71,7 @@ class Result(db.Model):
 with app.app_context():
     db.create_all()
     if not db.session.execute(db.select(Subject)).first():
-        db.session.add_all([Subject(name=n) for n in ["Anatomy", "Math", "Physics", "Chemistry", "Biology"]])
+        db.session.add_all([Subject(name=n) for n in ["English", "Math", "Physics", "Chemistry", "Biology"]])
         db.session.commit()
 
 # routes
@@ -132,7 +123,7 @@ def contents():
 
 
 @app.route("/subjects", methods=["GET", "POST"])
-@login_required
+# @login_required
 def subjects():
     form = SubjectForm()
     all_subjects = db.session.execute(db.select(Subject)).scalars().all()
@@ -158,31 +149,16 @@ def subjects():
 def results():
     return render_template("results.html", results=current_user.results)
 
-
 @app.route("/quiz/<int:subject_id>", defaults={"index": 0}, methods=["GET", "POST"])
 @app.route("/quiz/<int:subject_id>/<int:index>", methods=["GET", "POST"])
 @login_required
 def quiz(subject_id, index):
-    order_key = f"order_{subject_id}"
-    key = f"answered_{subject_id}"
-
-    # new run: build a fresh random order of this subject's question ids
-    if index == 0 and request.method == "GET":
-        ids = db.session.execute(
-            db.select(Questions.id).where(Questions.subject_id == subject_id)
-        ).scalars().all()
-        if not ids:
-            abort(404)
-        random.shuffle(ids)
-        session[order_key] = ids
-        session.pop(key, None)
-
-    order = session.get(order_key)
-    if not order:
-        # session expired or user jumped into the middle of a quiz
-        return redirect(url_for("quiz", subject_id=subject_id))
-
-    if index >= len(order):
+    questions = db.session.execute(
+        db.select(Questions).where(Questions.subject_id == subject_id).order_by(Questions.id)
+    ).scalars().all()
+    if not questions:
+        abort(404)
+    if index >= len(questions):
         return redirect(url_for("results"))
 
     # get (or create) this user's result row for the subject
@@ -194,10 +170,13 @@ def quiz(subject_id, index):
         db.session.add(res)
         db.session.commit()
 
-    q = db.session.get(Questions, order[index])
-    if q is None or q.subject_id != subject_id:
-        abort(404)
+    # new run through the quiz: forget which questions were already counted
+    # (the saved totals in the database are NOT touched)
+    key = f"answered_{subject_id}"
+    if index == 0 and request.method == "GET":
+        session.pop(key, None)
 
+    q = questions[index]
     question = {
         "id": q.id,
         "question": q.question_text,
@@ -219,6 +198,7 @@ def quiz(subject_id, index):
             "correct_text": texts[question["answer"]],
             "is_correct": is_correct,
         }
+        # count each question once per run (guards against refresh/resubmit)
         answered = session.get(key, [])
         if q.id not in answered:
             res.attempted_qs = (res.attempted_qs or 0) + 1
@@ -229,14 +209,13 @@ def quiz(subject_id, index):
 
     return render_template(
         "question.html", form=form, quiz=question, result=result,
-        subject_id=subject_id, index=index, is_last=(index == len(order) - 1),
-    )    
-
-@app.route("/start-quiz")
-@login_required
+        subject_id=subject_id, index=index, is_last=(index == len(questions) - 1),
+    )
+    
+@app.route("/start_quiz")
 def start_quiz():
-    my_subjects = [r.subject for r in current_user.results]
-    return render_template("quiz.html", subjects=my_subjects)
+    subjects = [{"id": 1, "name": "Mathematics", "description": "Algebra, geometry and more"},{"id": 2, "name": "Physics", "description": "Forces, energy and motion"},{"id": 3, "name": "Chemistry",   "description": "Elements and reactions"},{"id": 4, "name": "Biology",     "description": "Life and living systems"},]
+    return render_template("quiz.html", subjects=subjects)
 
 
 # TODO: 13. match subject id with subject chosen
