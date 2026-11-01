@@ -38,7 +38,7 @@ def send_verification_email(user):
 
 class Base(DeclarativeBase):
     pass
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///profiles.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_LINK')
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
@@ -292,4 +292,7 @@ def start_quiz():
     return render_template("quiz.html", subjects=my_subjects)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5003)
+    with app.app_context():
+        with db.engine.connect() as connection:
+            print(connection.execute(db.text("SELECT version()")).scalar())
+    app.run(debug= False)
