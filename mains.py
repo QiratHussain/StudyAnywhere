@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import  DeclarativeBase, relationship,Mapped, mapped_column
-from sqlalchemy import Integer, String, Float, ForeignKey, func, select
+from sqlalchemy import Integer, String, Float, ForeignKey, func, Text, CheckConstraint
 from flask_bootstrap import Bootstrap5
 from forms import RegisterForm, LoginForm, SubjectForm, QuizForm
 from dotenv import load_dotenv
@@ -14,7 +14,6 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 import smtplib, os
 
-# configure
 app = Flask(__name__)
 app.config['WTF_CSRF_TIME_LIMIT'] = None  
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
@@ -67,14 +66,15 @@ class Subject(db.Model):
 class Questions(db.Model):
     __tablename__ = "questions"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    subject_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("subjects.id"))
+    subject_id: Mapped[int] = mapped_column(Integer,db.ForeignKey("subjects.id"),nullable=False)
     subject = relationship("Subject", back_populates="questions")
-    question_text: Mapped[str] = mapped_column(String(100))
-    option_a: Mapped[str] = mapped_column(String(1000))
-    option_b: Mapped[str] = mapped_column(String(100))
-    option_c: Mapped[str] = mapped_column(String(100))
-    option_d: Mapped[str] = mapped_column(String(100))
-    right_option: Mapped[str] = mapped_column(String(100))
+    question_text: Mapped[str] = mapped_column(Text)
+    option_a: Mapped[str] = mapped_column(Text)
+    option_b: Mapped[str] = mapped_column(Text)
+    option_c: Mapped[str] = mapped_column(Text)
+    option_d: Mapped[str] = mapped_column(Text)
+    right_option: Mapped[str] = mapped_column(String(1), nullable=False)
+    __table_args__ = (CheckConstraint("right_option IN ('A', 'B', 'C', 'D')"),)
 
 class Result(db.Model):
     __tablename__ = "results"

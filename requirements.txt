@@ -1,28 +1,15 @@
-# Flask framework
 Flask==3.0.3
 Werkzeug==3.0.6
-
-# Database
 Flask-SQLAlchemy==3.1.1
 SQLAlchemy==2.0.44
 psycopg2-binary==2.9.10
 Flask-Migrate==4.0.7
-
-# Authentication and security
 Flask-Login==0.6.3
 itsdangerous==2.2.0
-
-# Forms and Bootstrap
 Flask-WTF==1.2.2
 WTForms==3.2.1
 email-validator==2.2.0
 Flask-Bootstrap5==0.1.1
-
-# Email
 Flask-Mail==0.10.0
-
-# Environment variables
 python-dotenv==1.0.1
-
-# Production deployment
 gunicorn==23.0.0
