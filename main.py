@@ -216,13 +216,12 @@ def results():
 @app.route("/quiz/<int:subject_id>/<int:index>", methods=["GET", "POST"])
 @login_required
 def quiz(subject_id, index):
-    questions = db.session.execute(
-        db.select(Questions).where(Questions.subject_id == subject_id).order_by(Questions.id)
+    all_questions = db.session.execute(
+        db.select(Questions).where(Questions.subject_id == subject_id)
     ).scalars().all()
-    if not questions:
+    if not all_questions:
         abort(404)
-    if index >= len(questions):
-        return redirect(url_for("results"))
+    by_id = {q.id: q for q in all_questions}
 
     # get (or create) this user's result row for the subject
     res = db.session.execute(
@@ -233,13 +232,25 @@ def quiz(subject_id, index):
         db.session.add(res)
         db.session.commit()
 
-    # new run through the quiz: forget which questions were already counted
-    # (the saved totals in the database are NOT touched)
-    key = f"answered_{subject_id}"
-    if index == 0 and request.method == "GET":
-        session.pop(key, None)
+    answered_key = f"answered_{subject_id}"
+    order_key = f"order_{subject_id}"
 
-    q = questions[index]
+    # new run: forget counted questions AND reshuffle
+    if index == 0 and request.method == "GET":
+        session.pop(answered_key, None)
+        session.pop(order_key, None)
+
+    # keep the shuffled order stable for the whole run
+    order = session.get(order_key)
+    if not order or set(order) != set(by_id):   # missing, or questions added/removed
+        order = list(by_id)
+        random.shuffle(order)
+        session[order_key] = order
+
+    if index >= len(order):
+        return redirect(url_for("results"))
+
+    q = by_id[order[index]]
     question = {
         "id": q.id,
         "question": q.question_text,
@@ -261,18 +272,17 @@ def quiz(subject_id, index):
             "correct_text": texts[question["answer"]],
             "is_correct": is_correct,
         }
-        # count each question once per run (guards against refresh/resubmit)
-        answered = session.get(key, [])
+        answered = session.get(answered_key, [])
         if q.id not in answered:
             res.attempted_qs = (res.attempted_qs or 0) + 1
             if is_correct:
                 res.marks = (res.marks or 0) + 1
-            session[key] = answered + [q.id]
+            session[answered_key] = answered + [q.id]
             db.session.commit()
 
     return render_template(
         "question.html", form=form, quiz=question, result=result,
-        subject_id=subject_id, index=index, is_last=(index == len(questions) - 1),
+        subject_id=subject_id, index=index, is_last=(index == len(order) - 1),
     )
     
 @app.route("/start_quiz")
