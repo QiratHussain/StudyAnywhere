@@ -38,7 +38,7 @@
         {% else %}
           <a href="{{ url_for('quiz', subject_id=subject_id, index=index + 1) }}" class="btn btn-primary">Next question</a>
         {% endif %}
-        
+        <a  href="{{ url_for('results') }}" class="btn btn-primary">End Quiz</a>
       </form>
     </div>
   </div>

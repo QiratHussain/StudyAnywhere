@@ -218,8 +218,5 @@ def start_quiz():
     my_subjects = [r.subject for r in current_user.results]
     return render_template("quiz.html", subjects=my_subjects)
 
-# TODO: 13. match subject id with subject chosen
-# TODO: 15. next quiz button and route
-
 if __name__ == "__main__":
     app.run(debug=True, port=5003)
