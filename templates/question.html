@@ -31,14 +31,17 @@
           {% endfor %}
         </fieldset>
 
-        {% if result is none %}
-        {{ form.submit(class="btn btn-primary") }}
-        {% elif is_last %}
-          <a href="{{ url_for('results') }}" class="btn btn-success">Finish &amp; see results</a>
-        {% else %}
-          <a href="{{ url_for('quiz', subject_id=subject_id, index=index + 1) }}" class="btn btn-primary">Next question</a>
-        {% endif %}
-        
+        <div class="d-flex justify-content-between">
+          <a href="{{ url_for('results') }}" class="btn btn-outline-danger">End quiz</a>
+
+          {% if result is none %}
+            {{ form.submit(class="btn btn-primary") }}
+          {% elif is_last %}
+            <a href="{{ url_for('results') }}" class="btn btn-success">Finish &amp; see results</a>
+          {% else %}
+            <a href="{{ url_for('quiz', subject_id=subject_id, index=index + 1) }}" class="btn btn-primary">Next question</a>
+          {% endif %}
+        </div>
       </form>
     </div>
   </div>
