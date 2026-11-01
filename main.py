@@ -213,10 +213,10 @@ def quiz(subject_id, index):
     )
     
 @app.route("/start_quiz")
+@login_required
 def start_quiz():
-    subjects = [{"id": 1, "name": "Mathematics", "description": "Algebra, geometry and more"},{"id": 2, "name": "Physics", "description": "Forces, energy and motion"},{"id": 3, "name": "Chemistry",   "description": "Elements and reactions"},{"id": 4, "name": "Biology",     "description": "Life and living systems"},]
-    return render_template("quiz.html", subjects=subjects)
-
+    my_subjects = [r.subject for r in current_user.results]
+    return render_template("quiz.html", subjects=my_subjects)
 
 # TODO: 13. match subject id with subject chosen
 # TODO: 15. next quiz button and route
