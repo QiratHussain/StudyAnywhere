@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Home | StudyAnywhere{% endblock %}
+{% block title %}StudyAnywhere{% endblock %}
 
 {% block content %}
 <div class="row home-hero align-items-stretch g-4">
@@ -8,8 +8,9 @@
   <!-- LEFT HALF: heading, subheading, cards -->
   <div class="col-md-6 d-flex flex-column justify-content-center">
     <div class="mb-5">
-      <h1 class="display-5 fw-bold">Your Heading Here</h1>
-      <p class="lead text-muted">Your subheading goes here, a short line describing what this is about.</p>
+      <h1 class="display-5 fw-bold">Study Anywhere</h1>
+      <p class="lead text-muted">Start right wherever you are.</p>
+      <p class="lead text-muted">Tomorrow never comes.</p>
     </div>
 
     <div class="row g-4">
@@ -39,7 +40,7 @@
 
   <!-- RIGHT HALF: image -->
   <div class="col-md-6 hero-col d-none d-md-flex">
-    <img src="{{ url_for('static', filename='assets/images/study.jpg') }}"
+    <img src="{{ url_for('static', filename='assets/images/study.png') }}"
          alt="Student studying" class="hero-img">
   </div>
 
