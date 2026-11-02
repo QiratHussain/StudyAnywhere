@@ -14,6 +14,7 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 import smtplib, os
 
+
 app = Flask(__name__)
 app.config['WTF_CSRF_TIME_LIMIT'] = None  
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
@@ -89,9 +90,9 @@ class Result(db.Model):
 
 with app.app_context():
     db.create_all()
-    if not db.session.execute(db.select(Subject)).first():
-        db.session.add_all([Subject(name=n) for n in ["English", "Math", "Physics", "Chemistry", "Biology"]])
-        db.session.commit()
+    # if not db.session.execute(db.select(Subject)).first():
+    #     db.session.add_all([Subject(name=n) for n in ["English", "Math", "Physics", "Chemistry", "Biology"]])
+    #     db.session.commit()
 
 # routes
 @app.route("/")
@@ -246,32 +247,18 @@ def quiz(subject_id, index):
         order = list(by_id)
         random.shuffle(order)
         session[order_key] = order
-
     if index >= len(order):
         return redirect(url_for("results"))
-
     q = by_id[order[index]]
-    question = {
-        "id": q.id,
-        "question": q.question_text,
-        "choices": [("A", q.option_a), ("B", q.option_b), ("C", q.option_c), ("D", q.option_d)],
-        "answer": q.right_option,
-    }
+    question = {"id": q.id,"question": q.question_text,"choices": [("A", q.option_a), ("B", q.option_b), ("C", q.option_c), ("D", q.option_d)],"answer": q.right_option,}
     form = QuizForm()
     form.choice.choices = question["choices"]
     result = None
-
     if form.validate_on_submit():
         selected = form.choice.data
         texts = dict(question["choices"])
         is_correct = selected == question["answer"]
-        result = {
-            "selected": selected,
-            "selected_text": texts[selected],
-            "correct": question["answer"],
-            "correct_text": texts[question["answer"]],
-            "is_correct": is_correct,
-        }
+        result = {"selected": selected,"selected_text": texts[selected],"correct": question["answer"],"correct_text": texts[question["answer"]],"is_correct": is_correct,}
         answered = session.get(answered_key, [])
         if q.id not in answered:
             res.attempted_qs = (res.attempted_qs or 0) + 1
@@ -279,11 +266,7 @@ def quiz(subject_id, index):
                 res.marks = (res.marks or 0) + 1
             session[answered_key] = answered + [q.id]
             db.session.commit()
-
-    return render_template(
-        "question.html", form=form, quiz=question, result=result,
-        subject_id=subject_id, index=index, is_last=(index == len(order) - 1),
-    )
+    return render_template("question.html", form=form, quiz=question, result=result,subject_id=subject_id, index=index, is_last=(index == len(order) - 1),)
     
 @app.route("/start_quiz")
 @login_required
