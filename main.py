@@ -95,6 +95,11 @@ with app.app_context():
     #     db.session.commit()
 
 # routes
+@app.route("/robots.txt")
+def robots():
+    base_url = request.url_root.rstrip("/")
+    txt = f"User-agent: *\nAllow: /\n\nSitemap: {base_url}/sitemap.xml\n"
+    return Response(txt, mimetype="text/plain")
 
 @app.route("/sitemap.xml")
 def sitemap():
