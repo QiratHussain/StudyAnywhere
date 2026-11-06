@@ -4,9 +4,19 @@
   <meta charset="utf-8" />
   <meta name="google-site-verification" content="Oh7QiiI11JA_nKGdyIXJdlIJafjCpBA9ndek6itKPy0" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="description" content="StudyAnywhere: study from anywhere, any time." />
-  <meta name="author" content="" />
+
   <title>{% block title %}StudyAnywhere{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}StudyAnywhere is a free MCQ practice platform. Pick your subjects, take randomized quizzes, get instant feedback and track your marks.{% endblock %}" />
+  <link rel="canonical" href="{{ config.get('SITE_URL', 'https://xtudyanywhere0.vercel.app') }}{{ request.path }}" />
+  {% block robots %}{% endblock %}
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="StudyAnywhere" />
+  <meta property="og:title" content="{{ self.title() }}" />
+  <meta property="og:description" content="Practice MCQs by subject and track your progress, wherever you are." />
+  <meta property="og:url" content="{{ config.get('SITE_URL', 'https://xtudyanywhere0.vercel.app') }}{{ request.path }}" />
+  <meta property="og:image" content="{{ config.get('SITE_URL', 'https://xtudyanywhere0.vercel.app') }}{{ url_for('static', filename='assets/images/study.png') }}" />
 
   <!-- Bootstrap (Bootstrap-Flask) -->
   {{ bootstrap.load_css() }}
