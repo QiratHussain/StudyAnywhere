@@ -16,6 +16,7 @@ import smtplib, os
 
 
 app = Flask(__name__)
+SITE_URL = os.getenv("SITE_URL", "https://xtudyanywhere0.vercel.app").rstrip("/")
 app.config['WTF_CSRF_TIME_LIMIT'] = None  
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
@@ -97,21 +98,18 @@ with app.app_context():
 # routes
 @app.route("/robots.txt")
 def robots():
-    base_url = request.url_root.rstrip("/")
-    txt = f"User-agent: *\nAllow: /\n\nSitemap: {base_url}/sitemap.xml\n"
+    txt = f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n"
     return Response(txt, mimetype="text/plain")
+
 
 @app.route("/sitemap.xml")
 def sitemap():
-    base_url = request.url_root.rstrip("/")
-
-    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <url>
-            <loc>{base_url}/</loc>
-        </url>
-    </urlset>
-    """
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"  <url><loc>{SITE_URL}/</loc></url>\n"
+        "</urlset>\n"
+    )
     return Response(xml, mimetype="application/xml")
     
 @app.route("/")
