@@ -98,10 +98,20 @@ with app.app_context():
 # routes
 @app.route("/robots.txt")
 def robots():
-    txt = f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n"
+    txt = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /contents\n"
+        "Disallow: /subjects\n"
+        "Disallow: /results\n"
+        "Disallow: /quiz/\n"
+        "Disallow: /start_quiz\n"
+        "Disallow: /confirm/\n"
+        "Disallow: /logout\n"
+        "\n"
+        f"Sitemap: {SITE_URL}/sitemap.xml\n"
+    )
     return Response(txt, mimetype="text/plain")
-
-
 @app.route("/sitemap.xml")
 def sitemap():
     xml = (
