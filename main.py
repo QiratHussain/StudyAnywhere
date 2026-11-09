@@ -14,6 +14,8 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 import smtplib, os
 
+from sqlalchemy.pool import NullPool
+
 
 app = Flask(__name__)
 SITE_URL = os.getenv("SITE_URL", "https://xtudyanywhere0.vercel.app").rstrip("/")
@@ -41,6 +43,18 @@ class Base(DeclarativeBase):
     pass
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_LINK')
 db = SQLAlchemy(model_class=Base)
+
+# POOLING
+
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "poolclass": NullPool,    # no reused connections: best for Vercel serverless
+    "pool_pre_ping": True,
+    "connect_args": {
+        "sslmode": "require",
+        "connect_timeout": 10,
+    },
+}
+
 db.init_app(app)
 
 login_manager= LoginManager()
