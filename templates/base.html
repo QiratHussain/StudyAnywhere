@@ -5,6 +5,18 @@
   <meta name="google-site-verification" content="Oh7QiiI11JA_nKGdyIXJdlIJafjCpBA9ndek6itKPy0" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
+  
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RJMY068KJ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-RJMY068KJ6');
+</script>
+
+
   <title>{% block title %}StudyAnywhere{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}StudyAnywhere is a free MCQ practice platform. Pick your subjects, take randomized quizzes, get instant feedback and track your marks.{% endblock %}" />
   <link rel="canonical" href="{{ config.get('SITE_URL', 'https://xtudyanywhere0.vercel.app') }}{{ request.path }}" />
